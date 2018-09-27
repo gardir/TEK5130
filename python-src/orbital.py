@@ -4,6 +4,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+keplers_constant = 3.986*10**5  # km**3/s**2
+Re = 6378  # km
 KJELLER_LAT = math.radians(59.9693)
 KJELLER_LON = math.radians(11.0361)
 
@@ -52,3 +54,22 @@ def dB(val):
 
 def todB(val):
     return 10 * math.log(val)
+
+
+def get_semi_major_axis(T):
+    s = T/2*math.pi
+    print(s)
+    s = s**2
+    s *= keplers_constant
+    print(s)
+    s = math.pow(s, 1/3)
+#    return math.pow((T/2*math.pi)**2*keplers_constant, 1/3)
+    return s
+
+
+def get_period(a):
+    return 2*math.pi*math.sqrt(a**3/keplers_constant)
+
+
+def get_eccentricity_from_perigee(a, hp):
+    return 1 - (hp + Re)/a
