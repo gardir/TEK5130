@@ -57,9 +57,10 @@ def todB(val):
 
 
 def get_semi_major_axis(T):
-    s = T/2*math.pi
+    s = T/(2*math.pi)
     print(s)
     s = s**2
+    print(s)
     s *= keplers_constant
     print(s)
     s = math.pow(s, 1/3)
