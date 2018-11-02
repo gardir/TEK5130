@@ -8,7 +8,9 @@ keplers_constant = 3.986*10**5  # km**3/s**2
 Re = 6378  # km
 KJELLER_LAT = math.radians(59.9693)
 KJELLER_LON = math.radians(11.0361)
-
+SIDEREAL_DAY = 86164.0905  # s
+c = 299792.458  # km/s
+k = 1.3806503 * 10**(-23)  # m^2 kg s^(-2) K^(-1)
 
 def distance_between_earth_centre_and_satellite(a, e, theta):
     """
@@ -21,7 +23,7 @@ def distance_between_earth_centre_and_satellite(a, e, theta):
     return (a * (1 - e ** 2)) / (1 + e * np.cos(theta))
 
 
-def distance_between_position_and_satellite(lat, lon, satellite_height, lat_satellite=0, lon_satellite=0):
+def distance_between_position_and_satellite(lat, lon, satellite_height, position_height=0, lat_satellite=0, lon_satellite=0):
     """
     d = sqrt( R_e^2 + r^2 - 2R_e r cos(W) )
     R_e:    Earth radius (in km)
@@ -44,7 +46,7 @@ def distance_between_position_and_satellite(lat, lon, satellite_height, lat_sate
         cos_W = math.cos(L_e) * math.cos(l_e - l_s)
     else:
         cos_W = math.sin(L_e) * math.sin(L_s) + math.cos(L_e) * math.cos(L_s) * math.cos(l_e - l_s)
-    d = math.sqrt( R_e**2 + r**2 - 2 * R_e * r * cos_W )
+    d = math.sqrt( R_e**2 + r**2 - 2 * (R_e+position_height) * r * cos_W )
     return d
     
 
@@ -53,16 +55,13 @@ def dB(val):
 
 
 def todB(val):
-    return 10 * math.log(val)
+    return 10 * math.log10(val)
 
 
 def get_semi_major_axis(T):
     s = T/(2*math.pi)
-    print(s)
     s = s**2
-    print(s)
     s *= keplers_constant
-    print(s)
     s = math.pow(s, 1/3)
 #    return math.pow((T/2*math.pi)**2*keplers_constant, 1/3)
     return s
@@ -74,3 +73,11 @@ def get_period(a):
 
 def get_eccentricity_from_perigee(a, hp):
     return 1 - (hp + Re)/a
+
+
+def calculate_path_loss(distance, frequency):
+    above = c / frequency    
+    below = 4 * math.pi * distance
+    result = (above/below)**2
+    return result
+
